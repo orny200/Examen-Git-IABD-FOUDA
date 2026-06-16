@@ -1,34 +1,33 @@
-name: Sync to Hugging Face Spaces
+name: Deploy to Hugging Face Space
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          lfs: true
 
-      - name: Push to Hugging Face
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Deploy to HF Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # 1. Configuration Git
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
-          
-          # 2. Vérification de sécurité pour le Token (sans l'afficher)
-          if [ -z "$HF_TOKEN" ]; then
-            echo "❌ ERREUR : Le secret HF_TOKEN est vide ou mal configuré dans GitHub !"
-            exit 1
-          fi
-
-          # 3. Tentative de synchronisation directe
-          # ⚠️ REMPLACE BIEN "TON_PSEUDO" et "NOM_DE_TON_SPACE" ci-dessous :
-          echo "🚀 Début de la synchronisation vers Hugging Face..."
-          git push --force https://x:$HF_TOKEN@huggingface.co/spaces/TON_PSEUDO/NOM_DE_TON_SPACE main:main
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          git clone https://WOMANINTECH:$HF_TOKEN@huggingface.co/spaces/WOMANINTECH/Examen-Git-IABD-FOUDA hf-space
+          cd hf-space
+          # Nettoyer ancien contenu HF
+          rm -rf *
+          cd ..
+          # Copier seulement fichiers utiles
+          cp -r app.py requirements.txt .pre-commit-config.yaml hf-space/ 2>/dev/null || true
+          cp -r *.py *.txt *.yaml hf-space/ 2>/dev/null || true
+          cd hf-space
+          git add .
+          git commit -m "Auto deploy from GitHub Actions" || echo "No changes"
+          git push
