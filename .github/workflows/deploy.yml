@@ -13,21 +13,31 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Push to Hugging Face
+      - name: Deploy to HF Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "github-actions"
 
-          git clone https://WOMANINTECH:$HF_TOKEN@huggingface.co/spaces/WOMANINTECH/Examen-Git-IABD-FOUDA
+          git clone https://WOMANINTECH:$HF_TOKEN@huggingface.co/spaces/WOMANINTECH/Examen-Git-IABD-FOUDA hf-space
 
-          cd Examen-Git-IABD-FOUDA
+          cd hf-space
 
-          cp -r ../* .
+          # Nettoyer ancien contenu HF
+          rm -rf *
+
+          cd ..
+
+          # Copier seulement fichiers utiles
+          cp -r app.py requirements.txt .pre-commit-config.yaml hf-space/ 2>/dev/null || true
+
+          cp -r *.py *.txt *.yaml hf-space/ 2>/dev/null || true
+
+          cd hf-space
 
           git add .
 
-          git commit -m "Auto deploy from GitHub" || echo "No changes"
+          git commit -m "Auto deploy from GitHub Actions" || echo "No changes"
 
           git push
