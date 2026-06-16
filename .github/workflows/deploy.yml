@@ -10,24 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Deploy to Hugging Face Space
+      - name: Push to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "github-actions"
 
-          git clone https://WOMINTECH:$HF_TOKEN@huggingface.co/spaces/WOMANINTECH/Examen-Git-IABD-FOUDA hf-space
+          git clone https://WOMANINTECH:$HF_TOKEN@huggingface.co/spaces/WOMANINTECH/Examen-Git-IABD-FOUDA
 
-          cp -r . hf-space/
+          cd Examen-Git-IABD-FOUDA
 
-          cd hf-space
+          cp -r ../* .
 
           git add .
 
-          git commit -m "Auto deploy from GitHub Actions" || echo "No changes to commit"
+          git commit -m "Auto deploy from GitHub" || echo "No changes"
 
           git push
