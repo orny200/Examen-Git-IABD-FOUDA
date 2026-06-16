@@ -12,19 +12,23 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          lfs: true # Crucial pour que les gros fichiers .pt soient suivis par LFS aussi sur les serveurs de GitHub
+          lfs: true
 
       - name: Push to Hugging Face
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          # 1. Configuration de l'identité Git temporaire de l'Action
+          # 1. Configuration Git
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           
-          # 2. Ajout du dépôt distant Hugging Face avec le Token secret de manière sécurisée
-          # REMPLACE BIEN "VOTRE_USERNAME" et "VOTRE_SPACE_NAME" par tes vraies infos !
-          git remote add hf https://x:$HF_TOKEN@huggingface.co/spaces/VOTRE_USERNAME/VOTRE_SPACE_NAME
-          
-          # 3. Forcer le push du code local vers la branche principale de Hugging Face
-          git push --force hf main
+          # 2. Vérification de sécurité pour le Token (sans l'afficher)
+          if [ -z "$HF_TOKEN" ]; then
+            echo "❌ ERREUR : Le secret HF_TOKEN est vide ou mal configuré dans GitHub !"
+            exit 1
+          fi
+
+          # 3. Tentative de synchronisation directe
+          # ⚠️ REMPLACE BIEN "TON_PSEUDO" et "NOM_DE_TON_SPACE" ci-dessous :
+          echo "🚀 Début de la synchronisation vers Hugging Face..."
+          git push --force https://x:$HF_TOKEN@huggingface.co/spaces/TON_PSEUDO/NOM_DE_TON_SPACE main:main
