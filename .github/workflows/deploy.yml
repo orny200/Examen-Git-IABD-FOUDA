@@ -22,17 +22,13 @@ jobs:
 
           git clone https://WOMANINTECH:$HF_TOKEN@huggingface.co/spaces/WOMANINTECH/Examen-Git-IABD-FOUDA hf-space
 
-          cd hf-space
+          rm -rf hf-space/*
 
-          # Nettoyer ancien contenu HF
-          rm -rf *
-
-          cd ..
-
-          # Copier seulement fichiers utiles
-          cp -r app.py requirements.txt .pre-commit-config.yaml hf-space/ 2>/dev/null || true
-
-          cp -r *.py *.txt *.yaml hf-space/ 2>/dev/null || true
+          cp app.py hf-space/ || true
+          cp requirements.txt hf-space/ || true
+          cp .pre-commit-config.yaml hf-space/ || true
+          cp model_weights.pt hf-space/ || true
+          cp .gitattributes hf-space/ || true
 
           cd hf-space
 
